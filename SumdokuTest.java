@@ -1,6 +1,5 @@
 import java.util.Arrays;
 
-
 /**
  * The {@code SumdokuTest} tests some functions and other procedures of  
  * {@code Sumdoku} class, according to IP first coding project. 

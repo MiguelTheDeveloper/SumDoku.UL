@@ -15,25 +15,65 @@ public class Sumdoku {
     }
 
     public static boolean isValidForPuzzle(SumdokuGrid grid) {
-        
-        boolean valid = true;
 
-        if(grid != null){
-            valid = false;
-        }
+        int totalCasas= grid.size()*grid.size();
+
         
-        for (int i = 1; i < (grid.size()*grid.size()); i++) {
-            if(grid.value(rowOfSquare(i, grid.size()),columnOfSquare(i, grid.size())) > grid.size()){
-                valid = false;
+        if(grid == null){
+            return false;
+
+            
+        }else{
+            int coluna;
+            int linha;
+            int tamanho = grid.size();
+            
+            
+
+            for (int i = 1; i <= totalCasas; i++) {
+                linha = rowOfSquare(i,tamanho);
+                coluna = columnOfSquare(i, tamanho);
+                
+                for(int j = 1; j <= grid.size(); j++){
+                    
+              
+
+                    if(grid.value(linha, coluna)<1||grid.value(linha, coluna)>grid.size()){
+                        return false;
+                    }
+                    
+                    
+                    if (coluna!=j){
+                        if (grid.value(linha, coluna) == grid.value(linha, j)){
+                            return false;
+                        }
+
+                    }
+
+                    if (linha!=j){
+                        if (grid.value(linha, coluna) == grid.value(j, coluna)){
+                            return false;
+                        }
+                    }
+
+                     
+                    
+                }
+
+                
+            
+                
             }
+
+            
         }
-        
          
 
-        return valid;
+        return true;
     }
 
     public static boolean isValidForPuzzle(GridGroups groups) {
+        
         return false;
     }
 
@@ -46,11 +86,11 @@ public class Sumdoku {
     }
 
     public static void readGrid(int size, java.util.Scanner scanner) {
-        // void method, no return
+        
     }
 
     public static void readGroups(SumdokuGrid grid, java.util.Scanner scanner) {
-        // void method, no return
+        
     }
 
     public static SumdokuGrid getBuiltInGrid(int size) {
@@ -66,11 +106,11 @@ public class Sumdoku {
     }
 
     public static void play(SumdokuGrid grid, GridGroups groups, int maxAttempts, java.util.Scanner scanner) {
-        // void method, no return
+        
     }
 
     public static void main(String[] args) {
-        
+        System.out.println("Olá ");
         
     }
 }
