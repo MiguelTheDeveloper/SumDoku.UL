@@ -121,18 +121,22 @@ public class Sumdoku {
     }
 
     public static boolean definesPuzzle(SumdokuGrid grid, GridGroups groups) {
-        
-        if (grid.size() == groups.gridSize()){
-            return true;
+       SumdokuSolver solved = new SumdokuSolver(grid, groups);
+
+        if (grid.size() != groups.gridSize()){
+            return false;
         }
-        
-        
-        
-        return false;
+
+         if(solved.howManySolutions(0) >= 2){
+                 return false;
+         }
+
+        return true;
     }
 
     public static String cluesToString(SumdokuGrid grid, GridGroups groups) {
-        StringBuilder clue = new StringBuilder("Soma das casas: ");
+        StringBuilder clue = new StringBuilder("Soma das casas:");
+        
         int totalCasas= groups.gridSize()*groups.gridSize();
         int counter=0;
 
@@ -141,27 +145,34 @@ public class Sumdoku {
         int coluna;
         int linha;
         int quadrado;
+        int grupoQuadrado;
+
         
 
         for(int j = 1; j <= nGrupos; j++){
-            counter = 0;
+            
             
             for (int i = 1; i <= totalCasas; i++) {
+                linha = rowOfSquare(i,tamanho);
+                coluna = columnOfSquare(i, tamanho);
+                grupoQuadrado = groups.groupOfSquare(linha,coluna);
+                quadrado = grid.value(linha, coluna);
 
                  
-                if (quadrado == j){
-                       counter++;
+                if (grupoQuadrado == j){
+                       counter += quadrado ;
                 }
-
+                
             }
 
-           
+            clue.append(" G" + j + " = "+counter);
+            counter = 0;
         
             
         }
+        clue.append(" \n");
         
-        
-        return "Soma das casas: G1 = 5 G2 = 2 G3 = 5 G4 = 5 G5 = 1";
+        return clue.toString();
     }
 
     public static void readGrid(int size, java.util.Scanner scanner) {
