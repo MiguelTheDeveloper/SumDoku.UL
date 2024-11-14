@@ -5,7 +5,7 @@ public class Sumdoku {
 
     public static int rowOfSquare(int square, int gridSize) {
         
-        int row= (square - 1) / gridSize+1;
+        int row = (square - 1) / gridSize + 1;
         return row;
     }
 
@@ -31,33 +31,26 @@ public class Sumdoku {
                 linha = rowOfSquare(i,tamanho);
                 coluna = columnOfSquare(i, tamanho);
                 
-                for(int j = 1; j <= grid.size(); j++){
-                    
-              
+                if(grid.value(linha, coluna)<1||grid.value(linha, coluna)>grid.size()||!grid.isFilled(linha, coluna)){
+                    return false;
+                }
+                
+                for(int j = linha; j <= grid.size(); j++){
+                     if (linha!=j){
+                        if (grid.value(linha, coluna) == grid.value(j, coluna)){
+                            return false;
+                        }
+                    }     
+                }
 
-                    if(grid.value(linha, coluna)<1||grid.value(linha, coluna)>grid.size()||!grid.isFilled(linha, coluna)){
-                        return false;
-                    }
-                    
-                    
+                for(int j = coluna; j <= grid.size(); j++){
                     if (coluna!=j){
                         if (grid.value(linha, coluna) == grid.value(linha, j)){
                             return false;
                         }
 
-                    } else if (linha!=j){
-                        if (grid.value(linha, coluna) == grid.value(j, coluna)){
-                            return false;
-                        }
-                    }
-
-                     
-                    
+                    } 
                 }
-
-                
-            
-                
             }
 
             
@@ -71,8 +64,8 @@ public class Sumdoku {
 
         int totalCasas= groups.gridSize()*groups.gridSize();
         boolean valido;
-        final int tamanho = groups.gridSize();
-        final int nGrupos = groups.numberOfGroups();
+        int tamanho = groups.gridSize();
+        int nGrupos = groups.numberOfGroups();
         
         if(tamanho < 3 || tamanho > 9 || groups == null){
             return false;
@@ -81,11 +74,11 @@ public class Sumdoku {
             int coluna;
             int linha;
             
-            int quadrado;
+            int grupoDoQuadrado;
             
             
             
-            if (nGrupos < 1 || nGrupos >= totalCasas){
+            if (nGrupos < 1 || nGrupos > totalCasas){
                 return false;
             }
             
@@ -96,13 +89,13 @@ public class Sumdoku {
 
                     linha = rowOfSquare(i,tamanho);
                     coluna = columnOfSquare(i, tamanho);
-                    quadrado = groups.groupOfSquare(linha,coluna);
+                    grupoDoQuadrado = groups.groupOfSquare(linha,coluna);
                     
-                    if (quadrado < 1 || quadrado > nGrupos){
+                    if (grupoDoQuadrado < 1 || grupoDoQuadrado > nGrupos){
                         return false;
                     }
                      
-                    if (quadrado == j){
+                    if (grupoDoQuadrado == j){
                            valido = true;
                     }
  
@@ -121,15 +114,17 @@ public class Sumdoku {
     }
 
     public static boolean definesPuzzle(SumdokuGrid grid, GridGroups groups) {
-       SumdokuSolver solved = new SumdokuSolver(grid, groups);
+      
 
         if (grid.size() != groups.gridSize()){
             return false;
         }
+        
+        SumdokuSolver solved = new SumdokuSolver(grid, groups);
 
-         if(solved.howManySolutions(0) >= 2){
+        if(solved.howManySolutions(2) > 1){
                  return false;
-         }
+        }
 
         return true;
     }
@@ -140,8 +135,8 @@ public class Sumdoku {
         int totalCasas= groups.gridSize()*groups.gridSize();
         int counter=0;
 
-        final int tamanho = groups.gridSize();
-        final int nGrupos = groups.numberOfGroups();
+        int tamanho = groups.gridSize();
+        int nGrupos = groups.numberOfGroups();
         int coluna;
         int linha;
         int quadrado;
@@ -221,9 +216,6 @@ public class Sumdoku {
     }
 
     public static SumdokuGrid getBuiltInGrid(int size) {
-        
-        
-        
         return null;
     }
 
@@ -265,6 +257,8 @@ public class Sumdoku {
     }
 
     public static void main(String[] args) {
+        
+        
         Scanner inpScanner = new Scanner(System.in);
         readGrid(3, inpScanner);
         System.out.println("Olá ");
