@@ -3,6 +3,15 @@ import java.util.Scanner;
 
 public class Sumdoku {
 
+    public static int readIntInInterval (int min, int max, Scanner reader) { 
+        int input = reader.nextInt(); 
+        while (input > max || input < min) {
+            System.out.println("Valor inválido. Tem que estar entre " + min + " e " + max + ".");
+            input = reader.nextInt();
+        }
+        return input;
+    }
+
     public static int rowOfSquare(int square, int gridSize) {
         
         int row = (square - 1) / gridSize + 1;
@@ -170,7 +179,7 @@ public class Sumdoku {
         return clue.toString();
     }
 
-    public static void readGrid(int size, java.util.Scanner scanner) {
+    public static SumdokuGrid readGrid(int size, java.util.Scanner scanner) {
         SumdokuGrid userGrid = new SumdokuGrid(size);
         boolean valid = true;
         boolean allValid = true;
@@ -199,6 +208,8 @@ public class Sumdoku {
                 }while(!valid);
 
             userGrid.fill(linha, coluna, value);
+
+
         }
             allValid = isValidForPuzzle(userGrid);
             
@@ -208,15 +219,109 @@ public class Sumdoku {
 
         }while (!allValid);
             
-        
+        return userGrid;
     }
 
-    public static void readGroups(SumdokuGrid grid, java.util.Scanner scanner) {
+    public static GridGroups readGroups(SumdokuGrid grid, java.util.Scanner scanner) {
         
+        int totalCasas = grid.size()*grid.size();
+        int casasDisponiveis = totalCasas;
+        System.out.println("Quantos Grupos Quer Fazer?");
+        int nGrupos = readIntInInterval(1, totalCasas, scanner);
+        int tamanho = grid.size();
+        boolean valid;
+        boolean allValid=false;
+        int tamGrupos = 0;
+
+        
+        GridGroups grupoUser = new GridGroups(grid.size(), nGrupos);
+        
+       
+        while (!allValid) {
+            
+        
+        for (int i=1;i <=nGrupos;i++){
+            
+            System.out.println("Tamanho do grupo "+i+"? :");
+            tamGrupos = readIntInInterval(1, casasDisponiveis, scanner);
+            
+            for(int j=1;j <= tamGrupos;j++){
+                valid = false;
+                while(!valid){
+                System.out.println("Casa ?:");
+                int casa = readIntInInterval(1, totalCasas, scanner);
+                int linha = rowOfSquare(casa, tamanho);
+                int coluna = columnOfSquare(casa, tamanho);
+                
+                if(grupoUser.groupOfSquare(linha,coluna) == 0){
+                    grupoUser.addSquareToGroup(linha, coluna, i);
+                    valid = true;
+                }else{
+                    System.out.println("Casa ja preenchida");
+                }
+
+                }
+
+                
+            }
+
+            casasDisponiveis -= tamGrupos;
+         
+            
+
+
+        }
+        if(!isValidForPuzzle(grupoUser)) {
+            System.out.println("Grupos Invalidos Faz de novo");
+        } else{
+            allValid=true;
+        }
+
+        }
+        return grupoUser;
+
     }
 
     public static SumdokuGrid getBuiltInGrid(int size) {
-        return null;
+        
+        SumdokuGrid grid = null;
+
+        switch (size) {
+            case 5:
+            grid = new SumdokuGrid(5);
+            grid.fill(1, 1, 2);
+            grid.fill(1, 2, 5);
+            grid.fill(1, 3, 3);
+            grid.fill(1, 4, 1);
+            grid.fill(1, 5, 4);
+            grid.fill(2, 1, 5);
+            grid.fill(2, 2, 3);
+            grid.fill(2, 3, 4);
+            grid.fill(2, 4, 2);
+            grid.fill(2, 5, 1);
+            grid.fill(3, 1, 1);
+            grid.fill(3, 2, 2);
+            grid.fill(3, 3, 5);
+            grid.fill(3, 4, 4);
+            grid.fill(3, 5, 3);
+            grid.fill(4, 1, 4);
+            grid.fill(4, 2, 1);
+            grid.fill(4, 3, 2);
+            grid.fill(4, 4, 3);
+            grid.fill(4, 5, 5);
+            grid.fill(5, 1, 3);
+            grid.fill(5, 2, 4);
+            grid.fill(5, 3, 1);
+            grid.fill(5, 4, 5);
+            grid.fill(5, 5, 2);
+            break;
+        
+            default:
+
+            break;
+        }
+		
+		return grid;
     }
 
     public static GridGroups getBuiltInGroups(int size) {
@@ -260,7 +365,8 @@ public class Sumdoku {
         
         
         Scanner inpScanner = new Scanner(System.in);
-        readGrid(3, inpScanner);
+        
+        readGroups(readGrid(3, inpScanner), inpScanner);
         System.out.println("Olá ");
         
     }
