@@ -4,7 +4,7 @@ import java.util.Scanner;
  * Classe que implementa a lógica do jogo Sumdoku.
  * Esta classe contém métodos para gerar grelhas e grupos predefinidos, ler entradas do utilizador e verificar se o puzzle está resolvido.
  * 
- * @author Miguel Cabeça, Duarte Rodrigues
+ * @author Miguel Cabeça Nº63762, Duarte Rodrigues Nº63746
  */
 public class Sumdoku {
     
@@ -16,9 +16,10 @@ public class Sumdoku {
      * @requires size deve ser 3 ou 5 para grelhas predefinidas válidas.
      */
     public static SumdokuGrid getBuiltInGrid(int size) {
-           
+           //Declara uma grid
             SumdokuGrid grid;
-     
+
+            //verifica o tamanho e depois da fill a grid se for invalido grid retorna null
             if(size == 3){
                  grid = new SumdokuGrid(3);
                  grid.fill(1, 1, 1);
@@ -63,7 +64,7 @@ public class Sumdoku {
             }
             
             
-            
+            //da return a grid ou a null se não estiver disponivel
             return grid;
      
          }
@@ -72,14 +73,15 @@ public class Sumdoku {
      * Gera grupos predefinidos para uma grelha Sumdoku com base no tamanho fornecido.
      *
      * @param size o tamanho da grelha (por exemplo, 3 ou 5)
-     * @return um objeto GridGroups contendo grupos predefinidos para a grelha
+     * @return um objeto GridGroups preenchido se o tamanho for válido; caso contrário, retorna null
      * @requires size deve ser 3 ou 5 para grelhas predefinidas válidas.
      */
     public static GridGroups getBuiltInGroups(int size) {
+            //Declara e Inicializa as Variaveis necessarias    
             int numberOfGroups;
             GridGroups predefGroups;
     
-    
+            //verifica o tamanho e depois da fill ao predefGroups se for invalido predefGroups retorna null
             if (size == 3) {
                 numberOfGroups = 3;
                 predefGroups = new GridGroups(size, numberOfGroups);
@@ -125,7 +127,7 @@ public class Sumdoku {
                
                 predefGroups=null;
                }
-            
+            //da return a predefGroups ou a null se não estiver disponivel
             return predefGroups;
     
         }
@@ -185,50 +187,51 @@ public class Sumdoku {
      * @requires grid não pode ser null
      */
     public static boolean isValidForPuzzle(SumdokuGrid grid) {
-
-        int totalCasas= grid.size()*grid.size();
         int tamanho = grid.size();
+        int totalCasas= tamanho*tamanho;
+        
         int coluna;
         int linha;
 
-
+        //verifica o tamanho da grid e se não é null
         if(tamanho < 3 || tamanho > 9 || grid == null){
             return false;
 
             
         }else{
+            // itera por todas as casas
             for (int i = 1; i <= totalCasas; i++) {
                 linha = rowOfSquare(i,tamanho);
                 coluna = columnOfSquare(i, tamanho);
                 
+                //verifica se todas as casas estao preenchidas e se estao nos valores corretos
                 if(grid.value(linha, coluna)<1||grid.value(linha, coluna)>grid.size()||!grid.isFilled(linha, coluna)){
                     return false;
                 }
-                
-                for(int j = 1; j <= grid.size(); j++){
+
+                //itera pelo tamanho do lado da grid para verificar a linha e a coluna
+                for(int j = 1; j <= tamanho; j++){
                      if (linha!=j){
                         if (grid.value(linha, coluna) == grid.value(j, coluna)){
                             return false;
                         }
-                    }     
-                }
-
-                for(int j = 1; j <= grid.size(); j++){
+                    }
                     if (coluna!=j){
                         if (grid.value(linha, coluna) == grid.value(linha, j)){
                             return false;
                         }
 
-                    } 
+                    }      
                 }
             }
 
             
         }
          
-
+        //se passar as verificações todas retorna true
         return true;
     }
+
     /**
     * Valida se um dado objeto GridGroups satisfaz as regras do puzzle.
     *
@@ -238,16 +241,18 @@ public class Sumdoku {
     */
     public static boolean isValidForPuzzle(GridGroups groups) {
 
-       
+        //Declara as Variaveis e inicializa o necessario
         boolean valido;
         int tamanho = groups.gridSize();
         int totalCasas= tamanho*tamanho;
         int nGrupos = groups.numberOfGroups();
         
+        //Verifica se o tamanho do grupo é invalido
         if(tamanho < 3 || tamanho > 9 || groups == null){
             return false;
             
         }else{
+            //declara algumas variaves so utilizadas dentro do if
             int coluna;
             int linha;
             
@@ -263,21 +268,24 @@ public class Sumdoku {
                 valido = false;
                 
                 for (int i = 1; i <= totalCasas; i++) {
-
+                    //define a linha e a coluna baseado na iteraçao do for
                     linha = rowOfSquare(i,tamanho);
                     coluna = columnOfSquare(i, tamanho);
+
                     grupoDoQuadrado = groups.groupOfSquare(linha,coluna);
                     
+                    //verifica se o grupoDoQuadrado esta entre dois valores
                     if (grupoDoQuadrado < 1 || grupoDoQuadrado > nGrupos){
                         return false;
                     }
-                     
+                    
+                    //verifica se o grupo do quadrado é igual ao grupo a ser testado
                     if (grupoDoQuadrado == j){
                            valido = true;
                     }
  
                 }
-
+                
                 if(!valido){return false;}
             
                 
@@ -286,7 +294,7 @@ public class Sumdoku {
             
         }
          
-
+        //se todas as verificações passarem sem returnar false retorna true
         return true;
     }
 
@@ -301,18 +309,21 @@ public class Sumdoku {
     */
     public static boolean definesPuzzle(SumdokuGrid grid, GridGroups groups) {
       
-
+        //verifica se os grupos têm o mesmo tamanho
         if (grid.size() != groups.gridSize()){
             return false;
+        }else{
+            //Cria um objeto SumdokuSolver
+            SumdokuSolver solved = new SumdokuSolver(grid, groups);
+
+            //verifica se existe mais de uma solução
+            if(solved.howManySolutions(2) > 1){
+                     return false;
+            }
+            return true;
         }
+
         
-        SumdokuSolver solved = new SumdokuSolver(grid, groups);
-
-        if(solved.howManySolutions(2) > 1){
-                 return false;
-        }
-
-        return true;
     }
 
     /**
@@ -324,41 +335,42 @@ public class Sumdoku {
     * @requires grid e groups não devem ser nulos; grid.size() deve ser igual a groups.gridSize().
     */
     public static String cluesToString(SumdokuGrid grid, GridGroups groups) {
-        StringBuilder clue = new StringBuilder("Soma das casas:");
         
-        int totalCasas= groups.gridSize()*groups.gridSize();
+        //Declara e Inicializa as Variaveis necessarias
+        StringBuilder clue = new StringBuilder("Soma das casas:");
+        int tamanho = groups.gridSize();
+        int totalCasas= tamanho*tamanho;
+        int nGrupos = groups.numberOfGroups();
+        int valorQuadrado;
+        int grupoQuadrado;
         int counter=0;
 
-        int tamanho = groups.gridSize();
-        int nGrupos = groups.numberOfGroups();
-        int coluna;
-        int linha;
-        int quadrado;
-        int grupoQuadrado;
-
         
-
+        //itera pelos numeros dos grupos
         for(int j = 1; j <= nGrupos; j++){
             
-            
+            //itera pelo total das casas
             for (int i = 1; i <= totalCasas; i++) {
-                linha = rowOfSquare(i,tamanho);
-                coluna = columnOfSquare(i, tamanho);
+                
+                int linha = rowOfSquare(i,tamanho);
+                int coluna = columnOfSquare(i, tamanho);
                 grupoQuadrado = groups.groupOfSquare(linha,coluna);
-                quadrado = grid.value(linha, coluna);
+                valorQuadrado = grid.value(linha, coluna);
 
-                 
+                //verifica se o grupo do quadrado a ser verificado é o mesmo do grupo a ser iterado
                 if (grupoQuadrado == j){
-                       counter += quadrado ;
+                    //Adiciona o valor do quadrado a variavel counter
+                    counter += valorQuadrado ;
                 }
                 
             }
-
+            //Da Append a Soma e ao numero do grupo
             clue.append(" G" + j + " = "+counter);
             counter = 0;
         
             
         }
+        //Da append a uma quebra de linha
         clue.append(" \n");
         
         return clue.toString();
@@ -375,45 +387,42 @@ public class Sumdoku {
     * @requires size deve ser >= 3 e <= 9; scanner não deve ser nulo.
     */
     public static SumdokuGrid readGrid(int size, Scanner scanner) {
+        //Declara e Inicializa as Variaveis necessarias
         SumdokuGrid userGrid = new SumdokuGrid(size);
-        boolean valid = true;
         boolean allValid = true;
         int totalSize = size*size;
         int linha;
         int coluna;
         int value;
 
+        //faz um do while enquanto não tiver uma Grid valida
         do{
+            //itera pelo tamanho total da Grid
             for (int i = 1; i <= totalSize;i++){
-            
-                do{
+                //define a linha e a coluna da casa a ser iterada
                 linha = rowOfSquare(i,size);
                 coluna = columnOfSquare(i, size);
+                
                 System.out.println("Casa "+i+" :");
-                value = scanner.nextInt();
-                
-                if(value < 1 || value > size){
-                   System.out.println("Numero de Casa Invalido tem que ser entre 1 e "+size);
-                   valid = false;
-                }else{
-                    valid = true;
-                }
-                
-            
-                }while(!valid);
 
-            userGrid.fill(linha, coluna, value);
+                // pede o valor da casa ao utilizador
+                value = readIntInInterval(1, size, scanner);
 
+                //preenche a grid do user na linha e na coluna
+                userGrid.fill(linha, coluna, value);
 
-        }
+            }
+            // verifica se a grelha é valida para o puzzle
             allValid = isValidForPuzzle(userGrid);
             
+            // verifica se é valido e da uma mensagem
             if(!allValid){
                 System.out.println("A grelha de Jogo é invalida (Reinsere a grid)");
             }
-
+           
         }while (!allValid);
-            
+        
+        //retorna a userGrid;
         return userGrid;
     }
     /**
@@ -425,7 +434,7 @@ public class Sumdoku {
     * @requires grid não deve ser nulo; scanner não deve ser nulo.
     */
     public static GridGroups readGroups(SumdokuGrid grid, Scanner scanner) {
-        
+        //Declara e Inicializa as Variaveis necessarias
         int tamanho = grid.size();
         int totalCasas = grid.size()*grid.size();
         int casasDisponiveis;
@@ -447,24 +456,32 @@ public class Sumdoku {
             // -Itera o numero de grupos que o utilizador escolhe fazer
             for (int i=1;i <=nGrupos;i++){
                 
+                //verifica se ainda a casas disponiveis a preencher se não tiver estamos perante um grupo totalmente invalido
                 if(casasDisponiveis != 0){
                     
                     // Pergunta o tamanho do grupo
                     System.out.println("Tamanho do grupo "+i+"? :");
                     tamGrupos = readIntInInterval(1, casasDisponiveis, scanner);
-            
+                    
+                    // Itera pelo tamanho do grupo Escolhido
                     for(int j=1;j <= tamGrupos;j++){
                         valid = false;
+                        
+                        //faz um loop enquanto estiver invalido
                         while(!valid){
                 
                         System.out.println("Casa ?:");
-                        int casa = readIntInInterval(1, totalCasas, scanner);
 
+                        //Pede a casa ao utilizador
+                        int casa = readIntInInterval(1, totalCasas, scanner);
+                        
+                        //define a linha e a coluna da casa escolhida
                         int linha = rowOfSquare(casa, tamanho);
                         int coluna = columnOfSquare(casa, tamanho);
-                
+                        
+                        //verifica se a casa a preencher não esta em nenhum grupo
                         if(grupoUser.groupOfSquare(linha,coluna)==0){
-                            
+                            //e se nao estiver adiciona ao Grupo
                             grupoUser.addSquareToGroup(linha, coluna, i);
                             valid = true;
 
@@ -476,24 +493,24 @@ public class Sumdoku {
 
                 
                     }
-
+                    //Remove o numero de casas disponiveis
                     casasDisponiveis -= tamGrupos;
                 }
           
             }
-
+            //Verifica se é um puzzle valido
             if(!isValidForPuzzle(grupoUser)) {
 
                 System.out.println("Grupo Criado é invalido");
 
             }else{
-
+                
                 allValid=true;
 
             }
 
         }
-
+        //retorna o grupoUser
         return grupoUser;
 
     }
@@ -508,23 +525,26 @@ public class Sumdoku {
      * @requires playedGrid e grid não devem ser nulos; playedGrid.size() deve ser igual a grid.size().
      */
     public static boolean puzzleSolved(SumdokuGrid playedGrid, SumdokuGrid grid) {
-        int totalCasas = playedGrid.size()*playedGrid.size();
+        
+        //Inicia as variaveis necessarias
         int tamanho = playedGrid.size();
+        int totalCasas = tamanho*tamanho;
         int linha;
         int coluna;
 
         
-
+        //itera pelo numero total de casas
         for (int i = 1; i <= totalCasas; i++) {
+            //define a linha e a coluna da casa escolhida
             linha = rowOfSquare(i,tamanho);
             coluna = columnOfSquare(i, tamanho);
             
+            //verifica se a casa não esta preenchida;
             if (!playedGrid.isFilled(linha, coluna)){
-                
-                return false;
-                
+                return false;   
             }
-            
+
+            //verifica se o valor da casa é diferente 
             if (grid.value(linha, coluna) != playedGrid.value(linha, coluna)){
                 return false;
             }
@@ -532,7 +552,7 @@ public class Sumdoku {
         }
 
         
-
+        //caso tenha passado todas as verificações retorna true;
         return true;
     }
 
@@ -547,35 +567,44 @@ public class Sumdoku {
     * @requires grid e groups não devem ser nulos; scanner não deve ser nulo; maxAttempts >= 1.
     */
     public static void play(SumdokuGrid grid, GridGroups groups, int maxAttempts, Scanner scanner) {
-        SumdokuGrid playedGrid = new SumdokuGrid(grid.size());
+        //Inicia as variaveis necessarias
+       
         int tamanho = grid.size();
-        int tamanhoTotal=grid.size()*grid.size();
+        int tamanhoTotal=tamanho*tamanho;
         int casa;
         int valor;
-        boolean valid = false;
-        
-        System.out.println("Neste jogo a grelha tem tamanho "+grid.size()+" e tens estas pistas:");
+        SumdokuGrid playedGrid = new SumdokuGrid(tamanho);
+
+        //Da print as informações das pistas
+        System.out.println("Neste jogo a grelha tem tamanho "+tamanho+" e tens estas pistas:");
         System.out.println(groups.toString());
         System.out.println(cluesToString(grid, groups));
-
+        
+        //Itera pelo numero de tentativas que o utilizador tem
         for (int i = maxAttempts; i >= 1; i--) {
-            
-                System.out.print("Casa a preencher?");
+
                 
-                System.out.println("Casa?:");
+                // Pede o numero da casa a preencher
+                System.out.println("Casa a preencher?:");
                 casa=readIntInInterval(1, tamanhoTotal, scanner);
                 
-                System.out.println("Valor?:");
+                //pede o valor que se quer preencher na casa escolhida
+                System.out.println("Valor da casa a preencher?:");
                 valor=readIntInInterval(1,tamanho, scanner);
 
+                //define a linha e a coluna da casa escolhida
                 int linha = rowOfSquare(casa, grid.size());
                 int coluna = columnOfSquare(casa, grid.size());
                 
+                //preenche a casa pedida;
                 playedGrid.fill(linha, coluna, valor);
-
+                
+                //Escreve como esta a grelha do jogador
                 System.out.println(playedGrid.toString());
         }
+            //verifica se após o puzzle ter sido completado se esta igual ao original
             if (puzzleSolved(playedGrid, grid)) {
+                
                 System.out.println("Ganhaste!!!!!");
             }else{
                 System.out.println("Tentativas Esgotadas. Tenta outra vez!");
@@ -591,28 +620,37 @@ public class Sumdoku {
     * @requires inpScanner não deve ser nulo.
     */
     public static void usrInputGame(Scanner inpScanner){
-        
+        // declara as variaveis necessarias
         int tamGrid,tamTotalGrid;
         GridGroups inGroups;
         SumdokuGrid inGrid;
         boolean valid;
         
+        // inicia um while enquanto o grid e o group
         do{
+            
             System.out.println("Tamanho da Grid: ");
+
+            //pede o tamanho da Grid
             tamGrid=readIntInInterval(3, 9, inpScanner);
-        
+            
+            //pede ao utilizador a grid atravez da função read grid
             inGrid = readGrid(tamGrid, inpScanner);
+            
+            //calcula o tamTotalGrid
             tamTotalGrid=inGrid.size()*inGrid.size();
 
+            //Pede os grupos ao utilizador
             inGroups= readGroups(inGrid, inpScanner);
 
+            //Verifica se os dois juntos são validos
             valid = definesPuzzle(inGrid, inGroups);
 
             if (!valid){
                 System.out.println("O jogo com esta grelha e estes grupos é invalido");
             }
 
-        }while (!definesPuzzle(inGrid, inGroups));
+        }while (!valid);
 
         play(inGrid, inGroups, tamTotalGrid, inpScanner);
     }
@@ -626,20 +664,24 @@ public class Sumdoku {
         int tamanhoTotal;
         System.out.println("Bem vindo ao Sumdoku");
         Scanner inpScanner = new Scanner(System.in);
+        
+        //verifica se tem argumentos
         if (args.length == 0){
             usrInputGame(inpScanner);
         }else{
-            
+            //tira o valor dos argumentos
             int argSizeGrid = Integer.parseInt(args[0]);
             
+            //vai buscar o a grid e o grupo as funções
             SumdokuGrid builtInGrid = getBuiltInGrid(argSizeGrid);
             GridGroups builtInGroup = getBuiltInGroups(argSizeGrid);
             
+            //verifica se retornam null
             if (builtInGrid != null || builtInGrid != null){
                 tamanhoTotal = argSizeGrid*argSizeGrid;
                 play(builtInGrid,builtInGroup,tamanhoTotal,inpScanner);
-            }
-            else{
+            }else{ //se for null pede tudo ao utilizador
+                
                 System.out.println("Tamanho Indisponivel crie um jogo valido.");
                 usrInputGame(inpScanner);
             }
@@ -647,7 +689,7 @@ public class Sumdoku {
         
 
         
-        
+        //fecha o scanner
         inpScanner.close();
     }
 }
